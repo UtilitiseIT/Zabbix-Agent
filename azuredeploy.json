@@ -1,0 +1,215 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"ContainerGroupsName": {
+            "type": "string",
+            "metadata": {
+            	"description": "Name for the container and group."
+            }
+        },
+        "StorageAccountName": {
+			"type": "string",
+			"defaultValue": "[uniqueString( utcNow('u') )]",
+            "metadata": {
+            	"description": "Storage Account Name will be auto generated."
+            }
+        },
+        "location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().location]",
+            "metadata": {
+            	"description": "Location for all resources."
+            }
+        },
+        "ZBX_SERVER_HOST": {
+            "type": "string",
+            "metadata": {
+                "description": "This variable is IP or DNS name of Zabbix server or Zabbix proxy. By default, value is zabbix-server. It is Server parameter in zabbix_agentd.conf. It is allowed to specify Zabbix server or Zabbix proxy port number using ZBX_SERVER_PORT variable. It make sense in case of non-default port for active checks."
+            }
+        },
+        "ZBX_SERVER_PORT": {
+            "type": "string",
+            "defaultValue": "10051",
+            "metadata":{
+                "description": "This variable is port Zabbix server listening on. By default, value is 10051."
+            }
+        },
+        "ZBX_PROXYMODE": {
+            "type": "string",
+            "defaultValue": "0",
+            "metadata": {
+                "description": "The variable allows to switch Zabbix proxy mode. By default, value is 0 - active proxy. Allowed values are 0 - active proxy and 1 - passive proxy."
+            }
+        },
+		"ZBX_HOSTNAME": {
+			"type": "string",
+			"metadata": {
+				"description": "This variable is unique, case sensitive hostname. By default, value is zabbix-proxy-mysql of the container. It is Hostname parameter in zabbix_proxy.conf."
+			}
+		}
+	},
+	"variables": {
+		"subnetName": "default",
+		"storageAccountID": "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Storage/storageAccounts",
+			"apiVersion": "2019-06-01",
+			"name": "[parameters('StorageAccountName')]",
+			"location": "[parameters('location')]",
+			"sku": {
+				"name": "Standard_LRS",
+				"tier": "Standard"
+			},
+			"kind": "StorageV2",
+			"properties": {
+				"largeFileSharesState": "Disabled",
+				"networkAcls": {
+					"bypass": "AzureServices",
+					"virtualNetworkRules": [],
+					"ipRules": [],
+					"defaultAction": "Allow"
+				},
+				"supportsHttpsTrafficOnly": true,
+				"encryption": {
+					"services": {
+						"file": {
+							"keyType": "Account",
+							"enabled": true
+						},
+						"blob": {
+							"keyType": "Account",
+							"enabled": true
+						}
+					},
+					"keySource": "Microsoft.Storage"
+				},
+				"accessTier": "Hot"
+			}
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts/fileServices",
+			"apiVersion": "2019-06-01",
+			"name": "[concat(parameters('StorageAccountName'), '/default')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+			],
+			"sku": {
+				"name": "Standard_LRS",
+				"tier": "Standard"
+			},
+			"properties": {
+				"cors": {
+					"corsRules": []
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+			"apiVersion": "2019-06-01",
+			"name": "[concat(parameters('StorageAccountName'), '/default/zabbix')]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('StorageAccountName'), 'default')]",
+				"[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+			],
+			"properties": {
+				"shareQuota": 1
+			}
+		},
+		{
+			"type": "Microsoft.ContainerInstance/containerGroups",
+			"apiVersion": "2018-10-01",
+			"name": "[parameters('ContainerGroupsName')]",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('StorageAccountName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+            ],
+			"properties": {
+				"osType": "Linux",
+				"restartPolicy": "Always",
+				"volumes": [
+					{
+						"name": "azurefile",
+						"azureFile": {
+							"shareName": "zabbix-proxy",
+							"storageAccountName": "[parameters('StorageAccountName')]",
+							"storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+						}
+					}
+				],
+				"ipAddress": {
+                    "ports": [
+                        {
+							"protocol": "TCP",
+							"port": 8080
+						},
+						{
+							"protocol": "TCP",
+							"port": 8443
+						},
+						{
+							"protocol": "TCP",
+							"port": 10051
+						}
+                    ],
+                    "type": "Public"
+				},
+				"containers": [
+					{
+                        "name": "[parameters('ContainerGroupsName')]",
+                        "properties": {
+                            "image": "zabbix/zabbix-proxy-mysql",
+                            "ports": [
+                                {
+                                    "protocol": "TCP",
+                                    "port": 8080
+                                },
+                                {
+                                    "protocol": "TCP",
+                                    "port": 8443
+                                },
+                                {
+                                    "protocol": "TCP",
+                                    "port": 10051
+                                }
+                            ],
+                            "environmentVariables": [
+								{
+									"name": "PHP_TZ",
+									"value": "[parameters('PHP_TZ')]"
+								},
+								{
+									"name": "ZBX_DEBUGLEVEL",
+									"value": "[parameters('ZBX_DEBUGLEVEL')]"
+								},
+								{
+									"name": "ZBX_TIMEOUT",
+									"value": "[parameters('ZBX_TIMEOUT')]"
+								},
+								{
+									"name": "ZBX_SERVER_NAME",
+									"value": "[parameters('ZBX_SERVER_NAME')]"
+								}
+							],
+                            "resources": {
+                                "requests": {
+                                    "memoryInGB": 1.5,
+                                    "cpu": 1
+                                }
+                            },
+                            "volumeMounts": [
+                                {
+                                    "name": "azurefile",
+                                    "mountPath": "/zabbix/"
+                                }
+							]
+                        }
+                    }
+				]
+			}
+		}
+	]
+}
