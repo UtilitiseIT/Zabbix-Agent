@@ -22,6 +22,18 @@
             	"description": "Location for all resources."
             }
         },
+		"MYSQL_ROOT_PASSWORD": {
+			"type": "string",
+			"metadata": {
+				"description": "Mysql database root password"
+			}
+		},
+		"MYSQL_PASSWORD": {
+			"type": "string",
+			"metadata": {
+				"description": "Password for the zabbix mysql account. This account is used by the Zabbix proxy to interface with the mysql database."
+			}
+		},
         "ZBX_SERVER_HOST": {
             "type": "string",
             "metadata": {
@@ -182,11 +194,48 @@
 							"port": 10051
 						}
                     ],
-                    "type": "Public"
+                    "type": "Public",
+					"dnsNameLabel": "[parameters('ContainerGroupsName')]"
 				},
 				"containers": [
 					{
-                        "name": "[parameters('ContainerGroupsName')]",
+						"name": "zabbix-proxy-db",
+						"properties": {
+							"image": "mysql:8.0",
+							"ports": [
+								{
+									"protocol": "TCP",
+									"port": 3306
+								}
+							],
+							"environmentVariables": [
+								{
+									"name": "MYSQL_ROOT_PASSWORD",
+									"value": "parameters('MYSQL_ROOT_PASSWORD')]"
+								},
+								{
+									"name": "MYSQL_DATABASE",
+									"value": "zabbix"
+								},
+								{
+									"name": "MYSQL_USER",
+									"value": "zabbix"
+								},
+								{
+									"name": "MYSQL_PASSWORD",
+									"value": "parameters('MYSQL_PASSWORD')]"
+								}
+							],
+							"resources": {
+								"requests": {
+									"memoryInGB": 1.0,
+									"cpu": 1
+								}
+							}
+						}
+					},
+					{
+                        "name": "zabbix-proxy",
                         "properties": {
                             "image": "zabbix/zabbix-proxy-mysql",
                             "ports": [
@@ -207,6 +256,18 @@
 								{
 									"name": "PHP_TZ",
 									"value": "[parameters('PHP_TZ')]"
+								},
+								{
+									"name": "MYSQL_USER",
+									"value": "zabbix"
+								},
+								{
+									"name": "MYSQL_PASSWORD",
+									"value": "[parameters('MYSQL_PASSWORD')]"
+								},
+								{
+									"name": "DB_SERVER_HOST",
+									"value": "127.0.0.1:3306"
 								},
 								{
 									"name": "ZBX_SERVER_PORT",
