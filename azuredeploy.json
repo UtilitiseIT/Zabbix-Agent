@@ -183,7 +183,7 @@
 				"restartPolicy": "Always",
 				"volumes": [
 					{
-						"name": "azurefile",
+						"name": "zabbix-proxy",
 						"azureFile": {
 							"shareName": "zabbix-proxy",
 							"storageAccountName": "[parameters('StorageAccountName')]",
@@ -191,7 +191,7 @@
 						}
 					},
 					{
-						"name": "azurefile",
+						"name": "zabbix-proxy-db",
 						"azureFile": {
 							"shareName": "zabbix-proxy-db",
 							"storageAccountName": "[parameters('StorageAccountName')]",
@@ -254,7 +254,7 @@
 							},
 							"volumeMounts": [
 								{
-									"name": "azurefile",
+									"name": "zabbix-proxy-db",
 									"mountPath": "/zabbix-proxy-db/"
 								}
 							]
@@ -324,7 +324,7 @@
                             },
                             "volumeMounts": [
                                 {
-                                    "name": "azurefile",
+                                    "name": "zabbix-proxy",
                                     "mountPath": "/zabbix-proxy/"
                                 }
 							]
