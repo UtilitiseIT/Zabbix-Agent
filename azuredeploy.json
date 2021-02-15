@@ -48,6 +48,12 @@
 				"description": "This variable is unique, case sensitive hostname. By default, value is zabbix-proxy-mysql of the container. It is Hostname parameter in zabbix_proxy.conf."
 			}
 		},
+		"ZBX_TIMEOUT": {
+			"type": "string",
+			"metadata": {
+				"description": "The variable is used to specify timeout for processing checks. By default, value is 3"
+			}
+		},
 		"PHP_TZ": {
 			"type": "string",
 			"metadata": {
@@ -201,6 +207,18 @@
 								{
 									"name": "PHP_TZ",
 									"value": "[parameters('PHP_TZ')]"
+								},
+								{
+									"name": "ZBX_SERVER_PORT",
+									"value": "[parameters('ZBX_SERVER_PORT')]"
+								},
+								{
+									"name": "ZBX_PROXYMODE",
+									"value": "[parameters('ZBX_PROXYMODE')]"
+								},
+								{
+									"name": "ZBX_HOSTNAME",
+									"value": "[parameters('ZBX_HOSTNAME')]"
 								},
 								{
 									"name": "ZBX_TIMEOUT",
