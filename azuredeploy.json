@@ -293,7 +293,7 @@
 								},
 								{
 									"name": "DB_SERVER_HOST",
-									"value": "127.0.0.1:3306"
+									"value": "127.0.0.1"
 								},
 								{
 									"name": "ZBX_SERVER_PORT",
