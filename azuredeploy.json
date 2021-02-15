@@ -190,8 +190,8 @@
 									"value": "[parameters('ZBX_TIMEOUT')]"
 								},
 								{
-									"name": "ZBX_SERVER_NAME",
-									"value": "[parameters('ZBX_SERVER_NAME')]"
+									"name": "ZBX_SERVER_HOST",
+									"value": "[parameters('ZBX_SERVER_HOST')]"
 								}
 							],
                             "resources": {
