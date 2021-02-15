@@ -201,10 +201,6 @@
 								{
 									"name": "PHP_TZ",
 									"value": "[parameters('PHP_TZ')]"
-							},
-								{
-									"name": "ZBX_DEBUGLEVEL",
-									"value": "[parameters('ZBX_DEBUGLEVEL')]"
 								},
 								{
 									"name": "ZBX_TIMEOUT",
