@@ -136,7 +136,7 @@
 		{
 			"type": "Microsoft.Storage/storageAccounts/fileServices/shares",
 			"apiVersion": "2019-06-01",
-			"name": "[concat(parameters('StorageAccountName'), '/default/zabbix')]",
+			"name": "[concat(parameters('StorageAccountName'), '/default/zabbix-proxy')]",
 			"dependsOn": [
 				"[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('StorageAccountName'), 'default')]",
 				"[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
@@ -238,7 +238,7 @@
                             "volumeMounts": [
                                 {
                                     "name": "azurefile",
-                                    "mountPath": "/zabbix/"
+                                    "mountPath": "/zabbix-proxy/"
                                 }
 							]
                         }
