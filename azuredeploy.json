@@ -239,11 +239,11 @@
 								},
 								{
 									"name": "MYSQL_USER",
-									"value": "zabbix"
+									"value": "root"
 								},
 								{
 									"name": "MYSQL_PASSWORD",
-									"value": "[parameters('MYSQL_PASSWORD')]"
+									"value": "[parameters('MYSQL_ROOT_PASSWORD')]"
 								}
 							],
 							"resources": {
