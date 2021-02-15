@@ -284,6 +284,10 @@
 									"value": "[parameters('PHP_TZ')]"
 								},
 								{
+									"name": "MYSQL_ROOT_PASSWORD",
+									"value": "[parameters('MYSQL_ROOT_PASSWORD')]"
+								},
+								{
 									"name": "MYSQL_USER",
 									"value": "zabbix"
 								},
