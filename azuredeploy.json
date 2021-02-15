@@ -47,6 +47,27 @@
 			"metadata": {
 				"description": "This variable is unique, case sensitive hostname. By default, value is zabbix-proxy-mysql of the container. It is Hostname parameter in zabbix_proxy.conf."
 			}
+		},
+		"PHP_TZ": {
+			"type": "string",
+			"metadata": {
+            	"description": "The variable is timezone in PHP format. Full list of supported timezones are available on php.net. By default, value is 'Australia/Melbourne'."
+			},
+			"defaultValue": "Australia/Melbourne",
+			"allowedValues": [
+				"Australia/Melbourne",
+				"Australia/Adelaide",
+				"Australia/Brisbane",
+				"Australia/Broken_Hill",
+				"Australia/Currie",
+				"Australia/Darwin",
+				"Australia/Eucla",
+				"Australia/Hobart",
+				"Australia/Lindeman",
+				"Australia/Lord_Howe",
+				"Australia/Perth",
+				"Australia/Sydney"
+			]
 		}
 	},
 	"variables": {
@@ -180,7 +201,7 @@
 								{
 									"name": "PHP_TZ",
 									"value": "[parameters('PHP_TZ')]"
-								},
+							},
 								{
 									"name": "ZBX_DEBUGLEVEL",
 									"value": "[parameters('ZBX_DEBUGLEVEL')]"
