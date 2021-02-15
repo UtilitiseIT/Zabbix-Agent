@@ -189,7 +189,16 @@
 							"storageAccountName": "[parameters('StorageAccountName')]",
 							"storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
 						}
-					}
+					},
+					{
+						"name": "azurefile",
+						"azureFile": {
+							"shareName": "zabbix-proxy-db",
+							"storageAccountName": "[parameters('StorageAccountName')]",
+							"storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]"
+						}
+					},
+
 				],
 				"ipAddress": {
                     "ports": [
