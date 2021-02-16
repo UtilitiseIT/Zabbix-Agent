@@ -202,7 +202,7 @@
 									"name": "ipconfigprofile1",
 									"properties": {
 										"subnet": {
-											"id": "[subscription('resourceGroups', parameters('resourceGroup'), 'providers/Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+											"id": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
 										}
 									}
 								}
