@@ -87,6 +87,12 @@
 				"Australia/Sydney"
 			]
 		},
+		"resourceGroup": {
+			"type": "string",
+			"metadata": {
+				"description": "VNet resource group."
+			}
+		},
 		"vnetName": {
 			"type": "string",
 			"metadata": {
@@ -196,7 +202,7 @@
 									"name": "ipconfigprofile1",
 									"properties": {
 										"subnet": {
-											"id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+											"id": "[resourceId(parameters('resourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
 										}
 									}
 								}
